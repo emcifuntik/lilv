@@ -148,7 +148,7 @@ commands.set('setModel', (player, args) => {
   }
 
   player.model = model.h;
-  player.SendChatMessage("Changed your Model to " + model.n);
+  player.SendChatMessage("Changed your Model to " + model.n + ", hash: 0x" + model.h.toString(16));
 });
 
 commands.set("snow", (player, args) => {

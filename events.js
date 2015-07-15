@@ -10,7 +10,6 @@
  */
 let Events = module.exports;
 let commands = require('./commands');
-let User = require('./user');
 
 /**
  * Registers all Events.
@@ -38,7 +37,7 @@ Events.register = () => {
  */
 Events.onClientConnected = client => {
   console.log("Client (ip: " + client.ipAddress + ") [ID:" + client.networkId + "] connected.");
-  
+
 };
 
 /**
@@ -67,6 +66,17 @@ Events.onChatMessage = (player, message) => {
       return true;
     }
   }
+  console.log(gm.user.Users[player.networkId].waitForPassword);
+  if(gm.user.Users[player.networkId].waitForPassword === true) {
+      if(gm.user.Users[player.networkId].isLogin) {
+          gm.user.Users[player.networkId].login(message);
+      }
+      else {
+          gm.user.Users[player.networkId].register(message);
+      }
+      gm.user.Users[player.networkId].waitForPassword = false;
+      return true;
+  }
   return false;
 };
 
@@ -77,20 +87,24 @@ Events.onChatMessage = (player, message) => {
  * @param {string} command the command
  */
 Events.onChatCommand = (player, command) => {
-  let args = command.split(" ");
+    if(!gm.user.Users[player.networkId].loggedIn) {
+        player.SendChatMessage("You can\'t use commands until not logged in", new RGB(255, 0, 0));
+        return 1;
+    }
+    let args = command.split(" ");
 
-  // Let's check if this crazy thing ever happens.
-  if (args.length === 0) {
-    throw "This should NEVER happen.";
-  }
-  let commandName = args.splice(0, 1)[0];
+    // Let's check if this crazy thing ever happens.
+    if (args.length === 0) {
+        throw "This should NEVER happen.";
+    }
+    let commandName = args.splice(0, 1)[0];
 
-  if (commands.has(commandName)) {
-    commands.get(commandName)(player, args);
-  }
-  else {
-    player.SendChatMessage("Unknown command.", new RGB(255,0,0));
-  }
+    if (commands.has(commandName)) {
+        commands.get(commandName)(player, args);
+    }
+    else {
+        player.SendChatMessage("Unknown command.", new RGB(255,0,0));
+    }
 };
 
 /**
@@ -100,8 +114,9 @@ Events.onChatCommand = (player, command) => {
  */
 Events.onPlayerCreated = player => {
 	console.log("Player " + player.name + " has successfully joined the server.");
-	var user = new User(player);
-	user.giveMoney(5000);
+	var User = new gm.user();
+	User.connect(player);
+
 	// Set world for the player
 	let now = new Date();
 	player.world.SetTime(now.getHours(), now.getMinutes(), now.getSeconds());
@@ -128,27 +143,31 @@ Events.onPlayerCreated = player => {
  * @param {integer} reason the reason (hash)
  */
 Events.onPlayerDeath = player => {
-  for (let tempPlayer of g_players) {
-    tempPlayer.graphics.ui.DisplayMessage("~r~" + player.name + "~s~ died.");
-  }
+	for (let tempPlayer of g_players) {
+		tempPlayer.graphics.ui.DisplayMessage("~r~" + player.name + "~s~ died.");
+	}
 };
 
 /**
- * Called when a Player shot
- *
- * @param {Player} player the shooting player
- * @param {integer} weaponType the weapon he used to shoot
- * @param {Vector3f} aimPos aim position
- */
+* Called when a Player shot
+*
+* @param {Player} player the shooting player
+* @param {integer} weaponType the weapon he used to shoot
+* @param {Vector3f} aimPos aim position
+*/
 Events.onPlayerShot = player => {
-  player.graphics.ui.DisplayMessage("~r~SHOTS FIRED");
+	player.graphics.ui.DisplayMessage("~r~SHOTS FIRED");
 };
 
 /**
- * Called when a Player is leaving the Server
- *
- * @param {Player} player the leaving player
- */
+* Called when a Player is leaving the Server
+*
+* @param {Player} player the leaving player
+*/
 Events.onPlayerDestroyed = player => {
-  console.log("Player " + player.name + " is leaving the server.");
+	console.log("Player " + player.name + " is leaving the server.");
+    if(gm.user.Users[player.networkId].loggedIn) {
+        gm.user.Users[player.networkId].saveData();
+    }
+	delete gm.user.Users[player.networkId];
 };
