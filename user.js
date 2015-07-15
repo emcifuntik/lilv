@@ -1,7 +1,5 @@
-function User(player) {
+function User() {
 }
-
-User.Users = new Array();
 
 User.prototype.connect = function(player) {
 	this.player = player;
@@ -24,30 +22,32 @@ User.prototype.connect = function(player) {
 	this.waitForPassword = false;
 	this.isLogin = false;
 
-	User.Users[player.networkId] = this;
+	var curry = function(user) {
+		return function (error, rows, fields) {
+			if(rows.length == 0) {
+				console.log("Player " + player.name + " is not registered");
+				setTimeout(function() {
+					player.SendChatMessage("You are not registered! Enter your password to register:", new RGB(0, 255, 0));
+					user.waitForPassword = true;
+					user.isLogin = false;
+				}, 50);
+				//player.SendChatMessage("Привет.", new RGB(0, 255, 0));
+			}
+			else {
+				console.log("Player registered");
+				setTimeout(function() {
+					player.SendChatMessage("You are registered! Enter your password to login:", new RGB(0, 255, 0));
+					user.waitForPassword = true;
+					user.isLogin = true;
+				}, 50);
+			}
+		};
+	};
 
 	//player.SendChatMessage("Привет.", new RGB(0, 255, 0));
 	var query = gm.connection.query('SELECT * FROM `users` WHERE `user_name`=?', [
 		this.player.name
-	], function (error, rows, fields) {
-		if(rows.length == 0) {
-			console.log("Player " + player.name + " is not registered");
-			setTimeout(function() {
-				player.SendChatMessage("You are not registered! Enter your password to register:", new RGB(0, 255, 0));
-				User.Users[player.networkId].waitForPassword = true;
-				User.Users[player.networkId].isLogin = false;
-			}, 50);
-			//player.SendChatMessage("Привет.", new RGB(0, 255, 0));
-		}
-		else {
-			console.log("Player registered");
-			setTimeout(function() {
-				player.SendChatMessage("You are registered! Enter your password to login:", new RGB(0, 255, 0));
-				User.Users[player.networkId].waitForPassword = true;
-				User.Users[player.networkId].isLogin = true;
-			}, 50);
-		}
-	});
+	], curry(this));
 };
 
 User.prototype.giveMoney = function(value) {

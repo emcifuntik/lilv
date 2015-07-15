@@ -16,7 +16,8 @@ global.gm = {
 	events: require('./events.js'),
 	utility: require('./utility.js'),
 	rcon: require('./rcon.js'),
-	fs: require('fs')
+	fs: require('fs'),
+	users: []
 };
 
 /**

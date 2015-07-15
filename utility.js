@@ -21,6 +21,14 @@ Utility.broadcastMessage = (message, opt_color) => {
   }
 };
 
+Utility.addFakeFunctions = player => {
+    //FAKE FUNCTIONS
+    player.AddWeapon = function(weapon, ammo, flag){
+
+    };
+    //FAKE FUNCTIONS END
+};
+
 
 
 /**
@@ -34,46 +42,47 @@ Utility.broadcastMessage = (message, opt_color) => {
  *                  only contains the first one found if allowDuplicates was false, empty array if no player was found
  */
 Utility.getPlayer = (idOrName, opt_allowDuplicates, opt_caseSensitive) => {
-  let allowDuplicates = opt_allowDuplicates || false;
-  let caseSensitive = opt_caseSensitive || false;
-	let id = parseInt(idOrName);
-	let fnCheck;
+    let allowDuplicates = opt_allowDuplicates || false;
+    let caseSensitive = opt_caseSensitive || false;
+    let id = parseInt(idOrName);
+    let fnCheck;
 
-	if (isNaN(id)) {
-		if(caseSensitive === false) {
-			idOrName = idOrName.toLowerCase();
-		}
+    if (isNaN(id)) {
+        if(caseSensitive === false) {
+            idOrName = idOrName.toLowerCase();
+        }
 
-		// define fnCheck to check the players name
-		fnCheck = target => {
-			let targetName;
-			if(caseSensitive === false) {
-				//ignore capital letters
-				targetName = target.name.toLowerCase();
-			}
-      else {
-				// do not ignore capital letters
-				targetName = target.name;
-			}
-			if (targetName.indexOf(idOrName) === 0) {
-				return true;
-			}
-			return false;
-		};
-	}
-  else {
-		fnCheck = target => target.client.networkId === id;
-	}
+        // define fnCheck to check the players name
+        fnCheck = target => {
+            let targetName;
+            if(caseSensitive === false) {
+                //ignore capital letters
+                targetName = target.name.toLowerCase();
+            }
+            else {
+                // do not ignore capital letters
+                targetName = target.name;
+            }
+            if (targetName.indexOf(idOrName) === 0) {
+                return true;
+            }
+            return false;
+        };
+    }
+    else {
+        fnCheck = target => target.client.networkId === id;
+    }
 
-	let playerArray = [];
-	for (let tempPlayer of g_players) {
-		if (fnCheck(tempPlayer)) {
-			playerArray.push(tempPlayer);
-			if(allowDuplicates === false) {
-				// exit the loop, because we just return the first player found
-				break;
-			}
-		}
-	}
-	return playerArray;
+    let playerArray = [];
+    for (let tempPlayer of g_players) {
+        if (fnCheck(tempPlayer)) {
+            playerArray.push(tempPlayer);
+            if(allowDuplicates === false) {
+                // exit the loop, because we just return the first player found
+                break;
+            }
+        }
+    }
+    if(playerArray.length == 0) return false;
+    else return (allowDuplicates === false) ? playerArray[0] : playerArray;
 };

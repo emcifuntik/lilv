@@ -30,6 +30,13 @@ Command.restart = function (args) {
   g_server.Restart();
 };
 
+Command.players = function(args) {
+    console.log("Players list:");
+    for(let player of g_players) {
+        console.log(player.client.networkId + ". SqlID: " + gm.users[player.client.networkId].ID + ", Admin: " + gm.users[player.client.networkId].admin);
+    }
+}
+
 Command.config = function(args) {
 	var config = JSON.parse(g_server.config);
 	console.log("\n\n======================GTA:Multiplayer======================");

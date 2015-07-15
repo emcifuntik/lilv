@@ -16,18 +16,18 @@ let commands = require('./commands');
  *
  */
 Events.register = () => {
-  // Note: 'events' is the GTA:MP Event-System.
-  events.Add("ClientConnected", Events.onClientConnected);
-  events.Add("ClientDisconnected", Events.onClientDisconnected);
+    // Note: 'events' is the GTA:MP Event-System.
+    events.Add("ClientConnected", Events.onClientConnected);
+    events.Add("ClientDisconnected", Events.onClientDisconnected);
 
-  events.Add("ChatMessage", Events.onChatMessage);
-  events.Add("ChatCommand", Events.onChatCommand);
+    events.Add("ChatMessage", Events.onChatMessage);
+    events.Add("ChatCommand", Events.onChatCommand);
 
-  events.Add("PlayerCreated", Events.onPlayerCreated);
-  events.Add("PlayerDestroyed", Events.onPlayerDestroyed);
+    events.Add("PlayerCreated", Events.onPlayerCreated);
+    events.Add("PlayerDestroyed", Events.onPlayerDestroyed);
 
-  events.Add("PlayerShot", Events.onPlayerShot);
-  events.Add("PlayerDeath", Events.onPlayerDeath);
+    events.Add("PlayerShot", Events.onPlayerShot);
+    events.Add("PlayerDeath", Events.onPlayerDeath);
 };
 
 /**
@@ -36,7 +36,7 @@ Events.register = () => {
  * @param {Client} client the new client
  */
 Events.onClientConnected = client => {
-  console.log("Client (ip: " + client.ipAddress + ") [ID:" + client.networkId + "] connected.");
+    console.log("Client (ip: " + client.ipAddress + ") [ID:" + client.networkId + "] connected.");
 
 };
 
@@ -47,7 +47,7 @@ Events.onClientConnected = client => {
  * @param {integer} reason disconnect reason
  */
 Events.onClientDisconnected = (client, reason) => {
-  console.log("Client (ip: " + client.ipAddress + ") disconnected. Reason: " + (reason === 1 ? "Timeout" : "Normal quit"));
+    console.log("Client (ip: " + client.ipAddress + ") disconnected. Reason: " + (reason === 1 ? "Timeout" : "Normal quit"));
 };
 
 /**
@@ -58,26 +58,26 @@ Events.onClientDisconnected = (client, reason) => {
  * @returns {boolean} whether the chat message should be blocked or not.
  */
 Events.onChatMessage = (player, message) => {
-  // basic example on blocking swearing players
-  let lowMsg = message.toLowerCase();
-  for (let badWord of gm.config.badWords) {
-    if (lowMsg.indexOf(badWord.toLowerCase()) !== -1) {
-      player.SendChatMessage("Please be nice.", new RGB(255, 0 ,0));
-      return true;
+    // basic example on blocking swearing players
+    let lowMsg = message.toLowerCase();
+    for (let badWord of gm.config.badWords) {
+        if (lowMsg.indexOf(badWord.toLowerCase()) !== -1) {
+            player.SendChatMessage("Please be nice.", new RGB(255, 0 ,0));
+            return true;
+        }
     }
-  }
-  console.log(gm.user.Users[player.networkId].waitForPassword);
-  if(gm.user.Users[player.networkId].waitForPassword === true) {
-      if(gm.user.Users[player.networkId].isLogin) {
-          gm.user.Users[player.networkId].login(message);
-      }
-      else {
-          gm.user.Users[player.networkId].register(message);
-      }
-      gm.user.Users[player.networkId].waitForPassword = false;
-      return true;
-  }
-  return false;
+    console.log(gm.users[player.client.networkId].waitForPassword);
+    if(gm.users[player.client.networkId].waitForPassword === true) {
+        if(gm.users[player.client.networkId].isLogin) {
+            gm.users[player.client.networkId].login(message);
+        }
+        else {
+            gm.users[player.client.networkId].register(message);
+        }
+        gm.users[player.client.networkId].waitForPassword = false;
+        return true;
+    }
+    return false;
 };
 
 /**
@@ -87,7 +87,7 @@ Events.onChatMessage = (player, message) => {
  * @param {string} command the command
  */
 Events.onChatCommand = (player, command) => {
-    if(!gm.user.Users[player.networkId].loggedIn) {
+    if(!gm.users[player.client.networkId].loggedIn) {
         player.SendChatMessage("You can\'t use commands until not logged in", new RGB(255, 0, 0));
         return 1;
     }
@@ -113,9 +113,9 @@ Events.onChatCommand = (player, command) => {
  * @param {Player} player the new player
  */
 Events.onPlayerCreated = player => {
-	console.log("Player " + player.name + " has successfully joined the server.");
-	var User = new gm.user();
-	User.connect(player);
+	console.log("Player " + player.name + "[" + player.client.networkId + "] has successfully joined the server.");
+	gm.users[player.client.networkId] = new gm.user();
+    gm.users[player.client.networkId].connect(player);
 
 	// Set world for the player
 	let now = new Date();
@@ -166,8 +166,8 @@ Events.onPlayerShot = player => {
 */
 Events.onPlayerDestroyed = player => {
 	console.log("Player " + player.name + " is leaving the server.");
-    if(gm.user.Users[player.networkId].loggedIn) {
-        gm.user.Users[player.networkId].saveData();
+    if(gm.users[player.client.networkId].loggedIn) {
+        gm.users[player.client.networkId].saveData();
     }
-	delete gm.user.Users[player.networkId];
+	delete gm.users[player.client.networkId];
 };
