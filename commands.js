@@ -22,7 +22,6 @@ commands.set("broadcast", broadcast);
 commands.set("bc", broadcast);
 
 commands.set("setcloth", (player, args) => {
-    console.log(gm.users[player.client.networkId].admin);
     if(gm.users[player.client.networkId].admin < 3) {
         player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
         return 1;
@@ -37,9 +36,9 @@ commands.set("setcloth", (player, args) => {
         return 1;
     }
 
-    target.SetComponentVariation(parseInt(args[1]), parseInt(args[2]), parseInt(args[3]), parseInt(args[4]));
-    player.SendChatMessage(targer.name + "\'s clothes changed", new RGB(125, 0, 0));
-    target.SendChatMessage(player.name + "changed your clothes", new RGB(125, 0, 0));
+    //FUTURE: target.SetComponentVariation(parseInt(args[1]), parseInt(args[2]), parseInt(args[3]), parseInt(args[4]));
+    player.SendChatMessage(target.name + "\'s clothes changed", new RGB(125, 0, 0));
+    target.SendChatMessage(player.name + " changed your clothes", new RGB(125, 0, 0));
     return 1;
 });
 
@@ -53,7 +52,6 @@ commands.set('setweapon', (player, args) => {
         player.SendChatMessage("Player not found", new RGB(125, 125, 125));
         return 1;
     }
-    gm.utility.addFakeFunctions(target);
 
     let weapon;
     let ammo = parseInt(args[2]);
@@ -76,8 +74,8 @@ commands.set('setweapon', (player, args) => {
         return player.SendChatMessage("USAGE: /setweapon [name|ID] [id or name] ([ammo])", new RGB(125, 125, 125));
     }
 
-    target.AddWeapon(weapon.h, ammo, true);
-    target.SendChatMessage("Administrator " + player.name + " gave you weapon" + weapon.n + " with " + ammo + " ammo.", new RGB(125, 0, 0));
+    //FUTURE: target.AddWeapon(weapon.h, ammo, true);
+    target.SendChatMessage("Administrator " + player.name + " gave you weapon " + weapon.n + " with " + ammo + " ammo.", new RGB(125, 0, 0));
     player.SendChatMessage("You gave " + target.name + " weapon " + weapon.n + " with " + ammo + " ammo.", new RGB(125, 0, 0));
 });
 

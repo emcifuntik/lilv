@@ -105,7 +105,6 @@ User.prototype.saveData = function() {
 			console.log("Player data saved");
 		}
 	});
-	console.log(query.sql);
 };
 
 User.prototype.register = function(password) {
