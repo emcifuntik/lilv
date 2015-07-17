@@ -231,3 +231,12 @@ commands.set("wind", (player, args) => {
     p.world.windLevel = v;
   }
 });
+commands.set("g_fraction", (player,args) =>{
+  if(args.length < 1 || isNaN(args[0]))
+  {
+    return player.SendChatMessage("USAGE: /g_fraction [id]", new RGB(255,255,0));
+  }
+  let str = "";
+  str += gm.fractions.GetNameFraction(args[0]) + "\n" + gm.fractions.GetDiscriptionFraction(args[0]);
+  player.SendChatMessage(str, new RGB(255,255,0));
+});

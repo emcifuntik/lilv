@@ -16,6 +16,7 @@ global.gm = {
 	events: require('./events.js'),
 	utility: require('./utility.js'),
 	rcon: require('./rcon.js'),
+	fractions: require('./fractions.js'),
 	fs: require('fs'),
 	users: []
 };
@@ -29,9 +30,9 @@ function main () {
 	gm.events.register();
 	console.log("Server started!");
 	gm.connection = gm.mysql.createConnection({
-	  host     : 'localhost',
+	  host     : '127.0.0.1',
 	  user     : 'root',
-	  password : '1232356',
+	  password : '123',
 	  database : 'lilv'
 	});
 	gm.connection.connect(function(err) {

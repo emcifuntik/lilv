@@ -177,4 +177,5 @@ User.prototype.login = function(password) {
 	], curry(this));
 };
 
+
 module.exports = User;
