@@ -1,6 +1,6 @@
 "use strict";
 let Fraction = module.exports;
-let fName =  {  
+let fName =  {
   0:"None",
   1:"Health",
   2:"FireMan",
@@ -14,12 +14,13 @@ let fDiscription = {
   2:"/fire [playerid], /cuff [playerid]",
   3:"/cuff [playerid]",
   4:"/tazer [playerid], /cuff [playerid]",
-  5:"/portable"
+  5:"/portable",
+  6:"/test"
 };
+
 Fraction.GetNameFraction = (fId) => {
   return fName[fId];
 };
 Fraction.GetDiscriptionFraction = (fId) => {
   return fDiscription[fId];
 };
-
