@@ -16,7 +16,8 @@ global.gm = {
 	events: require('./events.js'),
 	utility: require('./utility.js'),
 	rcon: require('./rcon.js'),
-	fractions: require('./fractions.js'),
+	faction: require('./faction.js'),
+	query: require('./query.js'),
 	fs: require('fs'),
 	users: []
 };
@@ -32,7 +33,7 @@ function main () {
 	gm.connection = gm.mysql.createConnection({
 	  host     : '127.0.0.1',
 	  user     : 'root',
-	  password : '123',
+	  password : '1232356',
 	  database : 'lilv'
 	});
 	gm.connection.connect(function(err) {
@@ -42,6 +43,7 @@ function main () {
 		}
 		console.log('MySQL connection successful [Thread:' + gm.connection.threadId + ']');
 	});
+	gm.query(8080);
 }
 
 main();

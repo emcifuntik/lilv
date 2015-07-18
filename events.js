@@ -100,7 +100,7 @@ Events.onChatCommand = (player, command) => {
     let commandName = args.splice(0, 1)[0];
 
     if (commands.has(commandName)) {
-        commands.get(commandName)(player, args);
+        commands.get(commandName)(commandName, player, args);
     }
     else {
         player.SendChatMessage("Unknown command.", new RGB(255,0,0));

@@ -21,16 +21,6 @@ Utility.broadcastMessage = (message, opt_color) => {
   }
 };
 
-Utility.addFakeFunctions = player => {
-    //FAKE FUNCTIONS
-    player.AddWeapon = function(weapon, ammo, flag){
-
-    };
-    //FAKE FUNCTIONS END
-};
-
-
-
 /**
  * Returns the player from his id or (part of his) Name
  *
