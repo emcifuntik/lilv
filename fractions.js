@@ -15,7 +15,8 @@ let fDiscription = {
   3:"/cuff [playerid]",
   4:"/tazer [playerid], /cuff [playerid]",
   5:"/portable",
-  6:"/test"
+  6:"/test",
+  7:"test"
 };
 
 Fraction.GetNameFraction = (fId) => {
