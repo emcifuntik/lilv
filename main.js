@@ -22,6 +22,11 @@ global.gm = {
 	users: []
 };
 
+global.isNaNEx = value => {
+	if(value.length == 0) return true;
+	else return isNaN(value);
+}
+
 /**
  * The main function of this package.
  */
@@ -30,7 +35,7 @@ function main () {
 	console.log("Registering Events...");
 	gm.events.register();
 	console.log("Server started!");
-	gm.connection = gm.mysql.createConnection({
+	gm.connection = gm.mysql.createPool({
 		host     : gm.config.mysql.host,
 		user     : gm.config.mysql.user,
 		password : gm.config.mysql.password,

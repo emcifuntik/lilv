@@ -26,7 +26,7 @@ let setCloth = (command, player, args) => {
         player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
         return 1;
     }
-    if (args.length < 5 || isNaN(args[1]) || isNaN(args[2]) || isNaN(args[3]) || isNaN(args[4])) {
+    if (args.length < 5 || isNaNEx(args[1]) || isNaNEx(args[2]) || isNaNEx(args[3]) || isNaNEx(args[4])) {
         player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [component id] [draw id] [texture id] [palette id]", new RGB(125, 125, 125));
         return 1;
     }
@@ -62,12 +62,12 @@ let setWeapon = (command, player, args) => {
 
     let weapon;
     let ammo = parseInt(args[2]);
-    if (isNaN(ammo)) {
+    if (isNaNEx(ammo)) {
         ammo = 300;
     }
 
     let num = parseInt(args[1]);
-    if (isNaN(num)) {
+    if (isNaNEx(num)) {
         weapon = gm.utility.hashes.findByName(gm.utility.hashes.weapons, args[1]);
     }
     else {
@@ -147,7 +147,7 @@ let setRain = (command, player, args) => {
         return 1;
     }
 
-    if (args.length < 1 || isNaN(args[0])) {
+    if (args.length < 1 || isNaNEx(args[0])) {
         return player.SendChatMessage("USAGE: /" + command + " [value]", RGB(125,125,125));
     }
 
@@ -181,7 +181,7 @@ let setModel = (command, player, args) => {
     }
 
     let model;
-    if (isNaN(args[1]) && !(typeof args[1] === "string" && args[1].indexOf('0x') === 0)) {
+    if (isNaNEx(args[1]) && !(typeof args[1] === "string" && args[1].indexOf('0x') === 0)) {
         model = gm.utility.hashes.findByName(gm.utility.hashes.peds, args[1]);
         if (typeof model === "undefined") {
             return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [Model id|hash]", RGB(125,125,125));
@@ -196,7 +196,7 @@ let setModel = (command, player, args) => {
             model = parseInt(args[1]);
         }
 
-        if (isNaN(model)) {
+        if (isNaNEx(model)) {
             return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [Model id|hash]", RGB(125,125,125));
         }
 
@@ -219,7 +219,7 @@ let setSnow = (command, player, args) => {
         return 1;
     }
 
-    if (args.length < 1 || isNaN(args[0])) {
+    if (args.length < 1 || isNaNEx(args[0])) {
         return player.SendChatMessage("USAGE: /" + command + " [value]", new RGB(125, 125, 125));
     }
 
@@ -246,7 +246,7 @@ let setWeather = (command, player, args) => {
         return 1;
     }
 
-    if (args.length < 1 || isNaN(args[0])) {
+    if (args.length < 1 || isNaNEx(args[0])) {
         return player.SendChatMessage("USAGE: /" + command + " [id]", new RGB(125, 125, 125));
     }
 
@@ -269,7 +269,7 @@ let setWind = (command, player, args) => {
         return 1;
     }
 
-    if (args.length < 1 || isNaN(args[0])) {
+    if (args.length < 1 || isNaNEx(args[0])) {
         return player.SendChatMessage("USAGE: /" + command + " [value]", new RGB(125, 125, 125));
     }
 
@@ -291,7 +291,7 @@ let makeAdmin = (command, player, args) => {
         player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
         return 1;
     }
-    if(args.length < 2 || isNaN(args[1]))
+    if(args.length < 2 || isNaNEx(args[1]))
     {
         return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [level]", new RGB(125,125,125));
     }
@@ -379,7 +379,7 @@ let makeLeader = (command, player, args) => {
         player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
         return 1;
     }
-    if(args.length < 2 || isNaN(args[1]))
+    if(args.length < 2 || isNaNEx(args[1]))
     {
         return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [faction id]", new RGB(125,125,125));
     }
@@ -391,9 +391,45 @@ let makeLeader = (command, player, args) => {
     }
 
     let faction = parseInt(args[1]);
+    if(faction > (gm.faction.Count() - 1)) {
+        return player.SendChatMessage("Faction number should be 0-"+gm.faction.Names.length, new RGB(125,125,125));
+    }
 
-    //TODO: Сделать проверку на уже имеющегося лидера.
-    //TODO: Проверка на радиус действия.
-    //TODO: Сделать подтверждение лидерства, в случае, если фракция не 0
+    gm.users[target.client.networkId].faction = faction;
+    gm.users[target.client.networkId].rank = 12;
+    target.SendChatMessage(player.name + " assigned you a leader of faction " + gm.faction.GetFactionName(faction), new RGB(125,0,0));
+    player.SendChatMessage("You assigned " + target.name + " a leader of faction " + gm.faction.GetFactionName(faction), new RGB(125,0,0));
 }
 commands.set("makeleader", makeLeader);
+
+let setRank = (command, player, args) => {
+    if(gm.users[player.client.networkId].faction == 0 || gm.users[player.client.networkId].rank < 11) {
+        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        return 1;
+    }
+    if(args.length < 2 || isNaNEx(args[1]))
+    {
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [rank]", new RGB(125,125,125));
+    }
+
+    let target = gm.utility.getPlayer(args[0]);
+    if(target === false) {
+        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    if(player.client.networkId == target.client.networkId) {
+        player.SendChatMessage("You can\'t change your rank", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    let rank = parseInt(args[1]);
+    if(rank > gm.users[player.client.networkId].rank) {
+        return player.SendChatMessage("You can\'t set rank higher then yours", new RGB(125,125,125));
+    }
+
+    gm.users[target.client.networkId].rank = rank;
+    target.SendChatMessage(player.name + " changed your rank to " + rank, new RGB(125,0,0));
+    player.SendChatMessage("You changed " + target.name + " rank to " + rank, new RGB(125,0,0));
+}
+commands.set("setrank", setRank);

@@ -28,3 +28,7 @@ Faction.GetFactionName = id => {
 Faction.GetFactionCommands = id => {
     return Commands[id];
 };
+
+Faction.Count = () => {
+    return Names.length;
+}
