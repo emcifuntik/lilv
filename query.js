@@ -23,7 +23,7 @@ function Query(port) {
         else if(action == "playersList") {
             let players = [];
             for(let p of g_players) {
-                player.push({id: p.client.networkId, name: p.name});
+                players.push({id: p.client.networkId, name: p.name});
             }
             response.end(JSON.stringify(players));
         }

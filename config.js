@@ -13,15 +13,21 @@ function interior() {
 }
 
 module.exports = {
-  badWords: ["fuck", "shit", "BitEmE"],
-  world: {
-    weather: 1,
-    windLevel: 0.0,
-    rainLevel: 0.0,
-    snowLevel: 0.0,
-    timeScale: 1.0,
-    IPLs: [],
-    interiors: [],
-    capInteriors: true
-  }
+    badWords: ["fuck", "shit", "BitEmE"],
+    world: {
+        weather: 1,
+        windLevel: 0.0,
+        rainLevel: 0.0,
+        snowLevel: 0.0,
+        timeScale: 1.0,
+        IPLs: [],
+        interiors: [],
+        capInteriors: true
+    },
+    mysql: {
+        host: "localhost",
+        user: "root",
+        password: "1232356",
+        database: "lilv"
+    }
 };

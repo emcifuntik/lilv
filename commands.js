@@ -286,7 +286,7 @@ let setWind = (command, player, args) => {
 commands.set("s_wind", setWind);
 commands.set("setwind", setWind);
 
-let makeAdmin = (command,player,args) =>{
+let makeAdmin = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 5) {
         player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
         return 1;
@@ -310,3 +310,90 @@ let makeAdmin = (command,player,args) =>{
     player.SendChatMessage("You changed " + target.name + "\'s admin level to " + level.toString(), new RGB(125, 0, 0));
 };
 commands.set("makeadmin", makeAdmin);
+
+let invite = (command, player, args) => {
+    if(gm.users[player.client.networkId].faction == 0 || gm.users[player.client.networkId].rank < 11) {
+        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        return 1;
+    }
+    if(args.length < 1)
+    {
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID]", new RGB(125,125,125));
+    }
+
+    let target = gm.utility.getPlayer(args[0]);
+    if(target === false) {
+        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    if(player.client.networkId == target.client.networkId) {
+        player.SendChatMessage("You can\'t invite yourself", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    if(gm.users[target.client.networkId].faction != 0) {
+        player.SendChatMessage("Player is already in faction", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    if(!gm.utility.isPlayerInRangeOfPlayer(player, 3.0, target)) {
+        player.SendChatMessage("Player is too far from you", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    gm.users[target.client.networkId].conversation = {
+        type: 1,//Faction invite
+        expires: Date.now() + 30000,
+        issuer: player,
+        info : {
+            faction: gm.users[player.client.networkId].faction
+        }
+    }
+
+    target.SendChatMessage(player.name + " propose you to join " + gm.faction.GetFactionName(gm.users[player.client.networkId].faction) + " faction", new RGB(0, 0, 125));
+    player.SendChatMessage("You proposed " + target.name + " to join your faction", new RGB(0, 0, 125));
+};
+commands.set("invite", invite);
+
+let accept = (command, player, args) => {
+    gm.users[player.client.networkId].answerPropose(true);
+};
+commands.set("accept", accept);
+commands.set("+", accept);
+
+let decline = (command, player, args) => {
+    gm.users[player.client.networkId].answerPropose(false);
+};
+commands.set("decline", decline);
+commands.set("-", decline);
+
+let test = (command, player, args) => {
+    gm.users[player.client.networkId].faction = parseInt(args[0]);
+    gm.users[player.client.networkId].rank = parseInt(args[1]);
+};
+commands.set("test", test);
+
+let makeLeader = (command, player, args) => {
+    if(gm.users[player.client.networkId].admin < 3) {
+        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        return 1;
+    }
+    if(args.length < 2 || isNaN(args[1]))
+    {
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [faction id]", new RGB(125,125,125));
+    }
+
+    let target = gm.utility.getPlayer(args[0]);
+    if(target === false) {
+        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        return 1;
+    }
+
+    let faction = parseInt(args[1]);
+
+    //TODO: Сделать проверку на уже имеющегося лидера.
+    //TODO: Проверка на радиус действия.
+    //TODO: Сделать подтверждение лидерства, в случае, если фракция не 0
+}
+commands.set("makeleader", makeLeader);

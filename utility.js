@@ -16,9 +16,9 @@ Utility.hashes = require('./hashes/hashes');
  * @param {RGB=} [opt_color] color of the message
  */
 Utility.broadcastMessage = (message, opt_color) => {
-  for (let player of g_players) {
-    player.SendChatMessage(message, opt_color);
-  }
+    for (let player of g_players) {
+        player.SendChatMessage(message, opt_color);
+    }
 };
 
 /**
@@ -75,4 +75,15 @@ Utility.getPlayer = (idOrName, opt_allowDuplicates, opt_caseSensitive) => {
     }
     if(playerArray.length == 0) return false;
     else return (allowDuplicates === false) ? playerArray[0] : playerArray;
+};
+
+Utility.isPlayerInRangeOfPoint = (player, range, x, y ,z) => {
+    x -= player.position.x;
+    y -= player.position.y;
+    z -= player.position.z;
+    return ((x * x) + (y * y) + (z * z) < (range * range));
+};
+
+Utility.isPlayerInRangeOfPlayer = (player, range, target) => {
+    return Utility.isPlayerInRangeOfPoint(player, range, target.position.x, target.position.y, target.position.z);
 };

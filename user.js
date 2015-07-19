@@ -22,24 +22,22 @@ User.prototype.connect = function(player) {
 	this.waitForPassword = false;
 	this.isLogin = false;
 
+	this.conversation = false;
+
 	var curry = function(user) {
 		return function (error, rows, fields) {
 			if(rows.length == 0) {
 				console.log("Player " + player.name + " is not registered");
-				setTimeout(function() {
-					player.SendChatMessage("You are not registered! Enter your password to register:", new RGB(0, 255, 0));
-					user.waitForPassword = true;
-					user.isLogin = false;
-				}, 50);
+				player.SendChatMessage("You are not registered! Enter your password to register:", new RGB(0, 255, 0));
+				user.waitForPassword = true;
+				user.isLogin = false;
 				//player.SendChatMessage("Привет.", new RGB(0, 255, 0));
 			}
 			else {
 				console.log("Player registered");
-				setTimeout(function() {
-					player.SendChatMessage("You are registered! Enter your password to login:", new RGB(0, 255, 0));
-					user.waitForPassword = true;
-					user.isLogin = true;
-				}, 50);
+				player.SendChatMessage("You are registered! Enter your password to login:", new RGB(0, 255, 0));
+				user.waitForPassword = true;
+				user.isLogin = true;
 			}
 		};
 	};
@@ -175,6 +173,40 @@ User.prototype.login = function(password) {
 		this.player.name,
 		password
 	], curry(this));
+};
+
+User.prototype.answerPropose = (answer) => {
+	if(this.conversation === false) {
+		this.player.SendChatMessage("You have no offers", new RGB(125, 125, 125));
+		return true;
+	}
+	if(this.conversation.expires < Date.now()) {
+		this.player.SendChatMessage("Offer is expired", new RGB(125, 125, 125));
+		this.conversation = false;
+		return true;
+	}
+	if(!gm.utility.isPlayerInRangeOfPlayer(this.player, 3.0, this.conversation.issuer)) {
+		this.player.SendChatMessage("Offer issuer is too far from you", new RGB(125, 125, 125));
+		this.conversation = false;
+		return true;
+	}
+
+	if(answer === true) {
+		switch(this.conversation.type) {
+			case 1: {
+				this.faction = this.conversation.info.faction;
+				this.rank = 1;
+				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", new RGB(0, 125, 0));
+			}
+		}//Вступление во фракцию
+		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", new RGB(0, 125, 0));
+		return true;
+	}
+	else if(answer === false) {
+		this.conversation = false;
+		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " declined you proposal", new RGB(125, 0, 0));
+		return true;
+	}
 };
 
 
