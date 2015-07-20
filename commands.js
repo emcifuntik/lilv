@@ -8,11 +8,11 @@ let commands = module.exports = new Map();
 
 let broadcast = (command, player, args) => {
     if(gm.users[player.client.networkId].admin == 0) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
     if(args.length == 0) {
-        player.SendChatMessage("USAGE: /" + command + " [message]", new RGB(125, 125, 125));
+        player.SendChatMessage("USAGE: /" + command + " [message]", Colors.Silver);
         return 1;
     }
     gm.utility.broadcastMessage("Admin " + player.name + ": " + args.join(" "), new RGB(125, 0, 0));
@@ -23,16 +23,16 @@ commands.set("bc", broadcast);
 
 let setCloth = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
     if (args.length < 5 || isNaNEx(args[1]) || isNaNEx(args[2]) || isNaNEx(args[3]) || isNaNEx(args[4])) {
-        player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [component id] [draw id] [texture id] [palette id]", new RGB(125, 125, 125));
+        player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [component id] [draw id] [texture id] [palette id]", Colors.Silver);
         return 1;
     }
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
@@ -46,17 +46,17 @@ commands.set("setcloth", setCloth);
 
 let setWeapon = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
     if (args.length < 2) {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [id or name] ([ammo])", new RGB(125, 125, 125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [id or name] ([ammo])", Colors.Silver);
     }
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
@@ -78,7 +78,7 @@ let setWeapon = (command, player, args) => {
     }
 
     if (typeof weapon === "undefined") {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [id or name] ([ammo])", new RGB(125, 125, 125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [id or name] ([ammo])", Colors.Silver);
     }
 
     //FUTURE: target.AddWeapon(weapon.h, ammo, true);
@@ -90,17 +90,17 @@ commands.set('setweapon', setWeapon);
 
 let goto = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
     if (args.length === 0) {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID]", new RGB(125, 125, 125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID]", Colors.Silver);
     }
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
@@ -112,7 +112,7 @@ commands.set("goto", goto);
 
 let kick = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 1) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
@@ -122,7 +122,7 @@ let kick = (command, player, args) => {
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
@@ -143,7 +143,7 @@ commands.set("playanim", playAnim);
 
 let setRain = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
@@ -166,7 +166,7 @@ commands.set("setrain", setRain);
 
 let setModel = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
@@ -176,7 +176,7 @@ let setModel = (command, player, args) => {
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
@@ -215,12 +215,12 @@ commands.set('setmodel', setModel);
 
 let setSnow = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
     if (args.length < 1 || isNaNEx(args[0])) {
-        return player.SendChatMessage("USAGE: /" + command + " [value]", new RGB(125, 125, 125));
+        return player.SendChatMessage("USAGE: /" + command + " [value]", Colors.Silver);
     }
 
     let v = parseFloat(args[0]);
@@ -242,12 +242,12 @@ commands.set("stopanim", player => {
 
 let setWeather = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
     if (args.length < 1 || isNaNEx(args[0])) {
-        return player.SendChatMessage("USAGE: /" + command + " [id]", new RGB(125, 125, 125));
+        return player.SendChatMessage("USAGE: /" + command + " [id]", Colors.Silver);
     }
 
     let v = parseInt(args[0]);
@@ -265,12 +265,12 @@ commands.set("setweather", setWeather);
 
 let setWind = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
 
     if (args.length < 1 || isNaNEx(args[0])) {
-        return player.SendChatMessage("USAGE: /" + command + " [value]", new RGB(125, 125, 125));
+        return player.SendChatMessage("USAGE: /" + command + " [value]", Colors.Silver);
     }
 
     let v = parseFloat(args[0]);
@@ -288,17 +288,17 @@ commands.set("setwind", setWind);
 
 let makeAdmin = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 5) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
     if(args.length < 2 || isNaNEx(args[1]))
     {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [level]", new RGB(125,125,125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [level]", Colors.Silver);
     }
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
@@ -313,32 +313,32 @@ commands.set("makeadmin", makeAdmin);
 
 let invite = (command, player, args) => {
     if(gm.users[player.client.networkId].faction == 0 || gm.users[player.client.networkId].rank < 11) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
     if(args.length < 1)
     {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID]", new RGB(125,125,125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID]", Colors.Silver);
     }
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
     if(player.client.networkId == target.client.networkId) {
-        player.SendChatMessage("You can\'t invite yourself", new RGB(125, 125, 125));
+        player.SendChatMessage("You can\'t invite yourself", Colors.Silver);
         return 1;
     }
 
     if(gm.users[target.client.networkId].faction != 0) {
-        player.SendChatMessage("Player is already in faction", new RGB(125, 125, 125));
+        player.SendChatMessage("Player is already in faction", Colors.Silver);
         return 1;
     }
 
     if(!gm.utility.isPlayerInRangeOfPlayer(player, 3.0, target)) {
-        player.SendChatMessage("Player is too far from you", new RGB(125, 125, 125));
+        player.SendChatMessage("Player is too far from you", Colors.Silver);
         return 1;
     }
 
@@ -351,8 +351,8 @@ let invite = (command, player, args) => {
         }
     }
 
-    target.SendChatMessage(player.name + " propose you to join " + gm.faction.GetFactionName(gm.users[player.client.networkId].faction) + " faction", new RGB(0, 0, 125));
-    player.SendChatMessage("You proposed " + target.name + " to join your faction", new RGB(0, 0, 125));
+    target.SendChatMessage(player.name + " propose you to join " + gm.faction.GetFactionName(gm.users[player.client.networkId].faction) + " faction", Colors.Mint);
+    player.SendChatMessage("You proposed " + target.name + " to join your faction", Colors.Mint);
 };
 commands.set("invite", invite);
 
@@ -376,60 +376,78 @@ commands.set("test", test);
 
 let makeLeader = (command, player, args) => {
     if(gm.users[player.client.networkId].admin < 3) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
     if(args.length < 2 || isNaNEx(args[1]))
     {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [faction id]", new RGB(125,125,125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [faction id]", Colors.Silver);
     }
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
     let faction = parseInt(args[1]);
     if(faction > (gm.faction.Count() - 1)) {
-        return player.SendChatMessage("Faction number should be 0-"+gm.faction.Names.length, new RGB(125,125,125));
+        return player.SendChatMessage("Faction number should be 0-"+gm.faction.Names.length, Colors.Silver);
     }
 
     gm.users[target.client.networkId].faction = faction;
     gm.users[target.client.networkId].rank = 12;
-    target.SendChatMessage(player.name + " assigned you a leader of faction " + gm.faction.GetFactionName(faction), new RGB(125,0,0));
-    player.SendChatMessage("You assigned " + target.name + " a leader of faction " + gm.faction.GetFactionName(faction), new RGB(125,0,0));
+    target.SendChatMessage(player.name + " assigned you a leader of faction " + gm.faction.GetFactionName(faction), Colors.Rufous);
+    player.SendChatMessage("You assigned " + target.name + " a leader of faction " + gm.faction.GetFactionName(faction), Colors.Rufous);
 }
 commands.set("makeleader", makeLeader);
 
 let setRank = (command, player, args) => {
     if(gm.users[player.client.networkId].faction == 0 || gm.users[player.client.networkId].rank < 11) {
-        player.SendChatMessage("Insufficient permissions", new RGB(125, 125, 125));
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
         return 1;
     }
     if(args.length < 2 || isNaNEx(args[1]))
     {
-        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [rank]", new RGB(125,125,125));
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [rank]", Colors.Silver);
     }
 
     let target = gm.utility.getPlayer(args[0]);
     if(target === false) {
-        player.SendChatMessage("Player not found", new RGB(125, 125, 125));
+        player.SendChatMessage("Player not found", Colors.Silver);
         return 1;
     }
 
     if(player.client.networkId == target.client.networkId) {
-        player.SendChatMessage("You can\'t change your rank", new RGB(125, 125, 125));
+        player.SendChatMessage("You can\'t change your rank", Colors.Silver);
         return 1;
     }
 
     let rank = parseInt(args[1]);
     if(rank > gm.users[player.client.networkId].rank) {
-        return player.SendChatMessage("You can\'t set rank higher then yours", new RGB(125,125,125));
+        return player.SendChatMessage("You can\'t set rank higher then yours", Colors.Silver);
     }
 
     gm.users[target.client.networkId].rank = rank;
-    target.SendChatMessage(player.name + " changed your rank to " + rank, new RGB(125,0,0));
-    player.SendChatMessage("You changed " + target.name + " rank to " + rank, new RGB(125,0,0));
+    target.SendChatMessage(player.name + " changed your rank to " + rank, Colors.Rufous);
+    player.SendChatMessage("You changed " + target.name + " rank to " + rank, Colors.Rufous);
 }
 commands.set("setrank", setRank);
+
+let getWeapon = (command, player, args) => {
+    if(gm.users[player.client.networkId].faction == 0) {
+        player.SendChatMessage("Insufficient permissions", Colors.Silver);
+        return 1;
+    }
+    if(!gm.isPlayerInRangeOfPoint(player, 10.0, gm.faction.homePositions[gm.users[player.networkId].faction])) {
+        player.SendChatMessage("You are not at your faction\'s home", Colors.Silver);
+        return 1;
+    }
+    let weaponArray = gm.faction.GetWeaponsByRank(gm.users[player.networkId].faction, gm.users[player.networkId].rank);
+    for(let item of weaponArray) {
+        //FUTURE: target.AddWeapon(item.weapon, item.ammo, true);
+    }
+    player.SendChatMessage("You got your duty weapons", Colors.Pear);
+    return true;
+};
+commands.set("getweapon", getWeapon);

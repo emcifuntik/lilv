@@ -27,6 +27,8 @@ global.isNaNEx = value => {
 	else return isNaN(value);
 }
 
+global.Colors = require('./colors.js');
+
 /**
  * The main function of this package.
  */

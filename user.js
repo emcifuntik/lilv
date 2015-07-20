@@ -28,21 +28,21 @@ User.prototype.connect = function(player) {
 		return function (error, rows, fields) {
 			if(rows.length == 0) {
 				console.log("Player " + player.name + " is not registered");
-				player.SendChatMessage("You are not registered! Enter your password to register:", new RGB(0, 255, 0));
+				player.SendChatMessage("You are not registered! Enter your password to register:", Colors.Pear);
 				user.waitForPassword = true;
 				user.isLogin = false;
-				//player.SendChatMessage("Привет.", new RGB(0, 255, 0));
+				//player.SendChatMessage("Привет.", Colors.Pear);
 			}
 			else {
 				console.log("Player registered");
-				player.SendChatMessage("You are registered! Enter your password to login:", new RGB(0, 255, 0));
+				player.SendChatMessage("You are registered! Enter your password to login:", Colors.Pear);
 				user.waitForPassword = true;
 				user.isLogin = true;
 			}
 		};
 	};
 
-	//player.SendChatMessage("Привет.", new RGB(0, 255, 0));
+	//player.SendChatMessage("Привет.", Colors.Pear);
 	var query = gm.connection.query('SELECT * FROM `users` WHERE `user_name`=?', [
 		this.player.name
 	], curry(this));
@@ -115,7 +115,7 @@ User.prototype.register = function(password) {
 			else {
 				console.log("Player register successfull");
 				user.ID = result.insertId;
-				user.player.SendChatMessage("Your account successfuly registered" , new RGB(0, 255, 0));
+				user.player.SendChatMessage("Your account successfuly registered" , Colors.Pear);
 				user.loggedIn = true;
 			}
 		};
@@ -132,12 +132,12 @@ User.prototype.login = function(password) {
 		return function (error, rows, fields) {
 			if(rows.length == 0) {
 				console.log("User with this combination of username and password not found");
-				user.player.SendChatMessage("Invalid password! You will be kicked." , new RGB(255, 0, 0));
+				user.player.SendChatMessage("Invalid password! You will be kicked." , Colors.Rufous);
 				user.player.Kick("Invalid password");
 			}
 			else {
 				console.log("Player logged in successfully");
-				user.player.SendChatMessage("You are successfuly logged in" , new RGB(0, 255, 0));
+				user.player.SendChatMessage("You are successfuly logged in" , Colors.Pear);
 				user.ID = rows[0].user_id;
 				user.loggedIn = true;
 				user.bank = rows[0].user_bank;
@@ -177,16 +177,16 @@ User.prototype.login = function(password) {
 
 User.prototype.answerPropose = (answer) => {
 	if(this.conversation === false) {
-		this.player.SendChatMessage("You have no offers", new RGB(125, 125, 125));
+		this.player.SendChatMessage("You have no offers", Colors.Silver);
 		return true;
 	}
 	if(this.conversation.expires < Date.now()) {
-		this.player.SendChatMessage("Offer is expired", new RGB(125, 125, 125));
+		this.player.SendChatMessage("Offer is expired", Colors.Silver);
 		this.conversation = false;
 		return true;
 	}
 	if(!gm.utility.isPlayerInRangeOfPlayer(this.player, 3.0, this.conversation.issuer)) {
-		this.player.SendChatMessage("Offer issuer is too far from you", new RGB(125, 125, 125));
+		this.player.SendChatMessage("Offer issuer is too far from you", Colors.Silver);
 		this.conversation = false;
 		return true;
 	}
@@ -196,15 +196,15 @@ User.prototype.answerPropose = (answer) => {
 			case 1: {
 				this.faction = this.conversation.info.faction;
 				this.rank = 1;
-				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", new RGB(0, 125, 0));
+				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", Color.Pear);
 			}
 		}//Вступление во фракцию
-		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", new RGB(0, 125, 0));
+		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", Color.Pear);
 		return true;
 	}
 	else if(answer === false) {
 		this.conversation = false;
-		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " declined you proposal", new RGB(125, 0, 0));
+		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " declined you proposal", Colors.Rufous);
 		return true;
 	}
 };
