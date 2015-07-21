@@ -216,9 +216,7 @@ User.prototype.answerPropose = (answer) => {
 	}
 
 	if(answer === true) {
-		if(this.conversation.issuer !== false) {
-			let issuer = gm.users[this.conversation.issuer.client.networkId];
-		}
+		let issuer = (this.conversation.issuer != false) ? gm.users[this.conversation.issuer.client.networkId] : false;
 		switch(this.conversation.type) {
 			case 1: {
 				this.faction = this.conversation.info.faction;
@@ -237,13 +235,13 @@ User.prototype.answerPropose = (answer) => {
 				}
 			}//Диалог о лечении
 		}
-		this.conversation = false;
 		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", Colors.Success);
+		this.conversation = false;
 		return true;
 	}
 	else if(answer === false) {
-		this.conversation = false;
 		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " declined you proposal", Colors.Fail);
+		this.conversation = false;
 		return true;
 	}
 };

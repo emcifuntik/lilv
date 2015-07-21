@@ -605,7 +605,7 @@ let heal = (command, player, args) => {
     player.SendChatMessage("You offered " + target.name + " to heal $ " + price, Colors.Propose);
     return true;
 };
-commands.set("invite", invite);
+commands.set("heal", heal);
 
 let accept = (command, player, args) => {
     gm.users[player.client.networkId].answerPropose(true);
