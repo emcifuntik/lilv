@@ -59,14 +59,6 @@ Events.onClientDisconnected = (client, reason) => {
  */
 Events.onChatMessage = (player, message) => {
     // basic example on blocking swearing players
-    let lowMsg = message.toLowerCase();
-    for (let badWord of gm.config.badWords) {
-        if (lowMsg.indexOf(badWord.toLowerCase()) !== -1) {
-            player.SendChatMessage("Please be nice.", new RGB(255, 0 ,0));
-            return true;
-        }
-    }
-    console.log(gm.users[player.client.networkId].waitForPassword);
     if(gm.users[player.client.networkId].waitForPassword === true) {
         if(gm.users[player.client.networkId].isLogin) {
             gm.users[player.client.networkId].login(message);
@@ -76,6 +68,25 @@ Events.onChatMessage = (player, message) => {
         }
         gm.users[player.client.networkId].waitForPassword = false;
         return true;
+    }
+    if(gm.users[player.client.networkId].muted > Date.now()) {
+        let muteTime = gm.users[player.client.networkId].muted - Date.now();
+        let minutes = muteTime/(60*1000) >> 0;
+        muteTime -= minutes * (60*1000);
+        let seconds = muteTime/(1000) >> 0;
+        muteTime -= seconds * (1000);
+        player.SendChatMessage("You are muted! Unmute in " + minutes + " minutes " + seconds + " seconds.", Colors.Fail);
+        return true;
+    }
+    else if(gm.users[player.client.networkId].muted != 0) {
+        gm.users[player.client.networkId].muted = 0;
+    }
+    let lowMsg = message.toLowerCase();
+    for (let badWord of gm.config.badWords) {
+        if (lowMsg.indexOf(badWord.toLowerCase()) !== -1) {
+            player.SendChatMessage("Please be nice.", new RGB(255, 0 ,0));
+            return true;
+        }
     }
     return false;
 };
@@ -88,7 +99,7 @@ Events.onChatMessage = (player, message) => {
  */
 Events.onChatCommand = (player, command) => {
     if(!gm.users[player.client.networkId].loggedIn) {
-        player.SendChatMessage("You can\'t use commands until not logged in", new RGB(255, 0, 0));
+        player.SendChatMessage("You can\'t use commands until not logged in", Colors.Warning);
         return 1;
     }
     let args = command.split(" ");
@@ -103,7 +114,7 @@ Events.onChatCommand = (player, command) => {
         commands.get(commandName)(commandName, player, args);
     }
     else {
-        player.SendChatMessage("Unknown command.", new RGB(255,0,0));
+        player.SendChatMessage("Unknown command.", Colors.Error);
     }
 };
 
@@ -133,7 +144,7 @@ Events.onPlayerCreated = player => {
 		}
 	}
 
-	player.SendChatMessage("Welcome to my Server!", new RGB(0, 255, 0));
+	player.SendChatMessage("Welcome to my Life Is Life RolePlay Server!", Colors.Welcome);
 };
 
 /**
@@ -144,7 +155,7 @@ Events.onPlayerCreated = player => {
  */
 Events.onPlayerDeath = player => {
 	for (let tempPlayer of g_players) {
-		tempPlayer.graphics.ui.DisplayMessage("~r~" + player.name + "~s~ died.");
+		//tempPlayer.graphics.ui.DisplayMessage("~r~" + player.name + "~s~ died.");
 	}
 };
 

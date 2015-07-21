@@ -1,3 +1,5 @@
+"use strict";
+
 function User() {
 }
 
@@ -10,32 +12,34 @@ User.prototype.connect = function(player) {
 	this.health = 0;
 	this.armor = 0;
 	this.faction = 0;
+	this.job = 0;
 	this.rank = 0;
 	this.position = {x:0.0, y:0.0, z:0.0};
 	this.rotation = {x:0.0, y:0.0, z:0.0};
 	this.model = 0;
-
 	this.admin = 0;
 	this.level = 1;
 	this.respect = 0;
-
 	this.waitForPassword = false;
 	this.isLogin = false;
-
 	this.conversation = false;
+	this.duty = false;
+	this.lastGetWeapon = 0;
+	this.banned = 0;
+	this.muted = 0;
 
-	var curry = function(user) {
+	let curry = function(user) {
 		return function (error, rows, fields) {
 			if(rows.length == 0) {
 				console.log("Player " + player.name + " is not registered");
-				player.SendChatMessage("You are not registered! Enter your password to register:", Colors.Pear);
+				player.SendChatMessage("You are not registered! Enter your password to register:", Colors.Success);
 				user.waitForPassword = true;
 				user.isLogin = false;
 				//player.SendChatMessage("Привет.", Colors.Pear);
 			}
 			else {
 				console.log("Player registered");
-				player.SendChatMessage("You are registered! Enter your password to login:", Colors.Pear);
+				player.SendChatMessage("You are registered! Enter your password to login:", Colors.Success);
 				user.waitForPassword = true;
 				user.isLogin = true;
 			}
@@ -43,7 +47,7 @@ User.prototype.connect = function(player) {
 	};
 
 	//player.SendChatMessage("Привет.", Colors.Pear);
-	var query = gm.connection.query('SELECT * FROM `users` WHERE `user_name`=?', [
+	gm.connection.query('SELECT * FROM `users` WHERE `user_name`=?', [
 		this.player.name
 	], curry(this));
 };
@@ -59,7 +63,7 @@ User.prototype.saveData = function() {
 	this.position = {x:this.player.position.x, y:this.player.position.y, z:this.player.position.z};
 	this.rotation = {x:this.player.rotation.x, y:this.player.rotation.y, z:this.player.rotation.z};
 	this.model = this.player.model;
-	var query = gm.connection.query('UPDATE `users` SET `user_pos_x`=?,\
+	gm.connection.query('UPDATE `users` SET `user_pos_x`=?,\
 `user_pos_y`=?,\
 `user_pos_z`=?,\
 `user_rot_x`=?,\
@@ -76,7 +80,9 @@ User.prototype.saveData = function() {
 `user_rank`=?,\
 `user_model`=?,\
 `user_last_login`=NOW(),\
-`user_last_ip`=? WHERE `user_id`=? LIMIT 1', [
+`user_last_ip`=?,\
+`user_banned`=?,\
+`user_muted`=? WHERE `user_id`=? LIMIT 1', [
 		this.position.x,
 		this.position.y,
 		this.position.z,
@@ -94,6 +100,8 @@ User.prototype.saveData = function() {
 		this.rank,
 		this.model,
 		this.player.client.ipAddress,
+		this.banned,
+		this.muted,
 		this.ID
 	], function (error, result, fields) {
 		if(result.affectedRows == 0) {
@@ -106,7 +114,7 @@ User.prototype.saveData = function() {
 };
 
 User.prototype.register = function(password) {
-	var curry = function(user) {
+	let curry = function(user) {
 		return function (error, result, fields) {
 			if(result.affectedRows == 0) {
 				console.log("Player register failed");
@@ -115,29 +123,44 @@ User.prototype.register = function(password) {
 			else {
 				console.log("Player register successfull");
 				user.ID = result.insertId;
-				user.player.SendChatMessage("Your account successfuly registered" , Colors.Pear);
+				user.player.SendChatMessage("Your account successfuly registered" , Colors.Success);
 				user.loggedIn = true;
 			}
 		};
 	};
 
-	var query_text = gm.connection.query('INSERT INTO `users` (`user_name`,`user_password`,`user_steam`) VALUES (?, md5(?), NULL)', [
+	gm.connection.query('INSERT INTO `users` (`user_name`,`user_password`,`user_steam`) VALUES (?, md5(?), NULL)', [
 		this.player.name,
 		password
 	], curry(this));
 };
 
 User.prototype.login = function(password) {
-	var curry = function(user) {
+	let curry = function(user) {
 		return function (error, rows, fields) {
 			if(rows.length == 0) {
 				console.log("User with this combination of username and password not found");
-				user.player.SendChatMessage("Invalid password! You will be kicked." , Colors.Rufous);
+				user.player.SendChatMessage("Invalid password! You will be kicked." , Colors.Fail);
 				user.player.Kick("Invalid password");
+				return true;
 			}
 			else {
+				if(rows[0].user_banned > Date.now()) {
+					let banTime = rows[0].user_banned - Date.now();
+					let days = banTime/(24*60*60*1000) >> 0;
+					banTime -= days * (24*60*60*1000);
+					let hours = banTime/(60*60*1000) >> 0;
+					banTime -= hours * (60*60*1000);
+					let minutes = banTime/(60*1000) >> 0;
+					banTime -= minutes * (60*1000);
+					let seconds = banTime/(1000) >> 0;
+					banTime -= seconds * (1000);
+					user.player.SendChatMessage("You are banned! Unban in " + days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds.", Colors.Fail);
+					user.player.Kick("Banned");
+					return true;
+				}
 				console.log("Player logged in successfully");
-				user.player.SendChatMessage("You are successfuly logged in" , Colors.Pear);
+				user.player.SendChatMessage("You are successfuly logged in" , Colors.Success);
 				user.ID = rows[0].user_id;
 				user.loggedIn = true;
 				user.bank = rows[0].user_bank;
@@ -166,10 +189,11 @@ User.prototype.login = function(password) {
 				user.admin = rows[0].user_admin;
 				user.level = rows[0].user_level;
 				user.respect = rows[0].user_respect;
+				user.muted = rows[0].user_muted;
 			}
 		};
 	};
-	var query = gm.connection.query('SELECT * FROM `users` WHERE `user_name`=? AND `user_password`=md5(?) LIMIT 1', [
+	gm.connection.query('SELECT * FROM `users` WHERE `user_name`=? AND `user_password`=md5(?) LIMIT 1', [
 		this.player.name,
 		password
 	], curry(this));
@@ -177,16 +201,16 @@ User.prototype.login = function(password) {
 
 User.prototype.answerPropose = (answer) => {
 	if(this.conversation === false) {
-		this.player.SendChatMessage("You have no offers", Colors.Silver);
+		this.player.SendChatMessage("You have no offers", Colors.Notice);
 		return true;
 	}
 	if(this.conversation.expires < Date.now()) {
-		this.player.SendChatMessage("Offer is expired", Colors.Silver);
+		this.player.SendChatMessage("Offer is expired", Colors.Warning);
 		this.conversation = false;
 		return true;
 	}
 	if(!gm.utility.isPlayerInRangeOfPlayer(this.player, 3.0, this.conversation.issuer)) {
-		this.player.SendChatMessage("Offer issuer is too far from you", Colors.Silver);
+		this.player.SendChatMessage("Offer issuer is too far from you", Colors.Warning);
 		this.conversation = false;
 		return true;
 	}
@@ -196,15 +220,15 @@ User.prototype.answerPropose = (answer) => {
 			case 1: {
 				this.faction = this.conversation.info.faction;
 				this.rank = 1;
-				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", Color.Pear);
+				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", Colors.Success);
 			}
 		}//Вступление во фракцию
-		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", Color.Pear);
+		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", Colors.Success);
 		return true;
 	}
 	else if(answer === false) {
 		this.conversation = false;
-		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " declined you proposal", Colors.Rufous);
+		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " declined you proposal", Colors.Fail);
 		return true;
 	}
 };

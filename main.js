@@ -18,6 +18,7 @@ global.gm = {
 	rcon: require('./rcon.js'),
 	faction: require('./faction.js'),
 	query: require('./query.js'),
+	timers: require('./timer.js'),
 	//fs: require('fs'),
 	users: []
 };
@@ -36,6 +37,7 @@ global.Colors = require('./colors.js');
 function main () {
 	console.log("Registering Events...");
 	gm.events.register();
+	gm.timers.register();
 	console.log("Server started!");
 	gm.connection = gm.mysql.createPool({
 		host     : gm.config.mysql.host,
