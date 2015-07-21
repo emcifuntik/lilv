@@ -216,13 +216,28 @@ User.prototype.answerPropose = (answer) => {
 	}
 
 	if(answer === true) {
+		if(this.conversation.issuer !== false) {
+			let issuer = gm.users[this.conversation.issuer.client.networkId];
+		}
 		switch(this.conversation.type) {
 			case 1: {
 				this.faction = this.conversation.info.faction;
 				this.rank = 1;
 				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", Colors.Success);
-			}
-		}//Вступление во фракцию
+			}//Вступление во фракцию
+			case 2: {
+				if(this.cash < this.conversation.info.price) {
+					this.player.SendChatMessage("You do not have enough money", Colors.Fail);
+					this.conversation.issuer.SendChatMessage("Player " + this.player.name + " do not have enough money", Colors.Fail);
+				}
+				else {
+					this.giveMoney(-this.conversation.info.price);
+					issuer.giveMoney(this.conversation.info.price);
+					this.player.SendChatMessage("Now you are healthy", Colors.Success);
+				}
+			}//Диалог о лечении
+		}
+		this.conversation = false;
 		this.conversation.issuer.SendChatMessage("Player " + this.player.name + " accept you proposal", Colors.Success);
 		return true;
 	}

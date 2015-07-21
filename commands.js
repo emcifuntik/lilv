@@ -559,6 +559,54 @@ let invite = (command, player, args) => {
 };
 commands.set("invite", invite);
 
+let heal = (command, player, args) => {
+    if(gm.users[player.client.networkId].faction != 1) {
+        player.SendChatMessage("Insufficient permissions", Colors.Error);
+        return 1;
+    }
+    if(args.length < 2 || isNaNEx(args[1]))
+    {
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID] [price]", Colors.Notice);
+    }
+
+    let target = gm.utility.getPlayer(args[0]);
+    if(target === false) {
+        player.SendChatMessage("Player not found", Colors.Error);
+        return 1;
+    }
+
+    if(player.client.networkId == target.client.networkId) {
+        player.SendChatMessage("You can\'t heal yourself", Colors.Warning);
+        return 1;
+    }
+
+    if(target.health == 100.0) {
+        player.SendChatMessage("Player is healthy", Colors.Warning);
+        return 1;
+    }
+
+    if(!gm.utility.isPlayerInRangeOfPlayer(player, 3.0, target)) {
+        player.SendChatMessage("Player is too far from you", Colors.Warning);
+        return 1;
+    }
+
+    let price = parseInt(args[1]);
+
+    gm.users[target.client.networkId].conversation = {
+        type: 2,//Heal
+        expires: Date.now() + 30000,
+        issuer: player,
+        info : {
+            price: price
+        }
+    }
+
+    target.SendChatMessage(player.name + " offered you heal $ " + price, Colors.Propose);
+    player.SendChatMessage("You offered " + target.name + " to heal $ " + price, Colors.Propose);
+    return true;
+};
+commands.set("invite", invite);
+
 let accept = (command, player, args) => {
     gm.users[player.client.networkId].answerPropose(true);
 };

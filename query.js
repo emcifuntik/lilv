@@ -6,7 +6,7 @@ function Query(port) {
     //We need a function which handles requests and send response
     function handleRequest(request, response){
         response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader('Content-Type', 'application/json');
+        response.setHeader("Content-Type", "application/json");
         let param = request.url.split("/");
         let action = param[param.length - 1];
         if(action == "serverInfo") {
