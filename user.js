@@ -246,5 +246,4 @@ User.prototype.answerPropose = (answer) => {
 	}
 };
 
-
 module.exports = User;

@@ -143,7 +143,7 @@ let Weapons = [
     ]
 ];
 
-Faction.homePositions = [
+let homePositions = [
     {x:0.0,y:0.0,z:0.0},
     {x:0.0,y:0.0,z:0.0},
     {x:0.0,y:0.0,z:0.0},
@@ -153,7 +153,15 @@ Faction.homePositions = [
     {x:0.0,y:0.0,z:0.0},
     {x:0.0,y:0.0,z:0.0}
 ];
-
+var CashOut = [
+        10,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40
+];
 Faction.GetFactionName = id => {
     return Names[id];
 };
@@ -174,4 +182,21 @@ Faction.GetWeaponsByRank = (id, rank) => {
         }
     }
     return WeapsToGive;
+};
+Faction.SetDuty = (player,factionid) => {
+    if(!gm.utility.isPlayerInRangeOfPoint(player,3.0,homePositions[factionid].x,homePositions[factionid].y,homePositions[factionid].z)) {
+        player.SendChatMessage("Duty point is too far from you", Colors.Warning);
+        return 1;
+    }
+    if(gm.users[player.client.networkId].duty == false){
+        gm.users[player.client.networkId].duty = true;
+    //сдесь будут команды выдачи оружия и т.д.
+        player.SendChatMessage("You took clothes", Colors.Success);
+    }
+    else {
+        gm.users[player.client.networkId].duty = false;
+    }
+};
+Faction.GetDuty = (player) => {
+    return gm.users[player.client.networkId].duty;
 };

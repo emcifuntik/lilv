@@ -741,3 +741,12 @@ let setPosition = (command, player, args) => {
 };
 commands.set("setposition", setPosition);
 commands.set("setpos", setPosition);
+let Duty = (command, player, args) => {
+    if(gm.users[player.client.networkId].faction > 0)
+    {
+        gm.faction.SetDuty(player,gm.users[player.client.networkId].faction);
+        return 1;
+    }
+    player.SendChatMessage("You're a civilian");
+}
+commands.set("duty", Duty);
