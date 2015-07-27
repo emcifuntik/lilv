@@ -515,7 +515,7 @@ let makeAdmin = (command, player, args) => {
 commands.set("makeadmin", makeAdmin);
 
 let invite = (command, player, args) => {
-    if(gm.users[player.client.networkId].faction == 0 || gm.users[player.client.networkId].rank < 11) {
+    if((gm.users[player.client.networkId].faction == 0 && gm.users[player.client.networkId].gang == 0) || gm.users[player.client.networkId].rank < 11) {
         player.SendChatMessage("Insufficient permissions", Colors.Error);
         return 1;
     }
@@ -535,8 +535,8 @@ let invite = (command, player, args) => {
         return 1;
     }
 
-    if(gm.users[target.client.networkId].faction != 0) {
-        player.SendChatMessage("Player is already in faction", Colors.Warning);
+    if(gm.users[target.client.networkId].faction != 0 || gm.users[target.client.networkId].gang != 0) {
+        player.SendChatMessage("Player is already in faction or gang", Colors.Warning);
         return 1;
     }
 
@@ -544,20 +544,67 @@ let invite = (command, player, args) => {
         player.SendChatMessage("Player is too far from you", Colors.Warning);
         return 1;
     }
-
-    gm.users[target.client.networkId].conversation = {
-        type: 1,//Faction invite
-        expires: Date.now() + 30000,
-        issuer: player,
-        info : {
-            faction: gm.users[player.client.networkId].faction
+    if(gm.users[player.client.networkId].faction > 0)
+    {
+        gm.users[target.client.networkId].conversation = {
+            type: 1,//Faction invite
+            expires: Date.now() + 30000,
+            issuer: player,
+            info : {
+                faction: gm.users[player.client.networkId].faction
+            }
         }
     }
-
+    else if (gm.users[player.client.networkId].gang > 0) {
+        gm.users[target.client.networkId].conversation = {
+            type: 1,//Faction invite
+            expires: Date.now() + 30000,
+            issuer: player,
+            info : {
+                gang: gm.users[player.client.networkId].gang
+            }
+        }
+    }
     target.SendChatMessage(player.name + " propose you to join " + gm.faction.GetFactionName(gm.users[player.client.networkId].faction) + " faction", Colors.Propose);
     player.SendChatMessage("You proposed " + target.name + " to join your faction", Colors.Propose);
 };
 commands.set("invite", invite);
+
+let uninvite = (command, player, args) => {
+    if(!gm.utility.isPlayerInRangeOfPlayer(player, 3.0, target)) {
+        player.SendChatMessage("Player is too far from you", Colors.Warning);
+        return 1;
+    }
+    if((gm.users[player.client.networkId].faction == 0 && gm.users[player.client.networkId].gang == 0) || gm.users[player.client.networkId].rank < 11) {
+        player.SendChatMessage("Insufficient permissions", Colors.Error);
+        return 1;
+    }
+    if(args.length < 1)
+    {
+        return player.SendChatMessage("USAGE: /" + command + " [Player name|ID]", Colors.Notice);
+    }
+
+    let target = gm.utility.getPlayer(args[0]);
+    if(target === false) {
+        player.SendChatMessage("Player not found", Colors.Error);
+        return 1;
+    }
+
+    if(player.client.networkId == target.client.networkId) {
+        player.SendChatMessage("You can\'t uninvite yourself", Colors.Warning);
+        return 1;
+    }
+
+    if(gm.users[target.client.networkId].faction == gm.users[player.client.networkId].faction && gm.users[target.client.networkId].gang == gm.users[player.client.networkId].gang)
+    {
+        gm.users[target.client.networkId].faction = 0;
+        gm.users[target.client.networkId].gang = 0;
+        target.SendChatMessage("You has been kicked from faction or gang", Colors.Propose);
+        player.SendChatMessage("You kick from faction or gang", Colors.Propose);
+    }
+
+};
+commands.set("uninvite", uninvite);
 
 let heal = (command, player, args) => {
     if(gm.users[player.client.networkId].faction != 1) {
@@ -654,7 +701,7 @@ let makeLeader = (command, player, args) => {
 commands.set("makeleader", makeLeader);
 
 let setRank = (command, player, args) => {
-    if(gm.users[player.client.networkId].faction == 0 || gm.users[player.client.networkId].rank < 11) {
+    if((gm.users[player.client.networkId].faction == 0 && gm.users[player.client.networkId].gang == 0) || gm.users[player.client.networkId].rank < 11) {
         player.SendChatMessage("Insufficient permissions", Colors.Error);
         return 1;
     }
@@ -748,5 +795,13 @@ let Duty = (command, player, args) => {
         return 1;
     }
     player.SendChatMessage("You're a civilian");
-}
+};
 commands.set("duty", Duty);
+let jail = (command, player, args) => {
+    if(gm.users[player.client.networkId].admin < 3)
+    {
+        player.SendChatMessage("You're are not admin", Colors.Error);
+    }
+
+};
+commands.set("jail",jail);

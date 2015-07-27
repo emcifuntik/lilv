@@ -19,6 +19,7 @@ global.gm = {
 	faction: require('./faction.js'),
 	query: require('./query.js'),
 	timers: require('./timer.js'),
+	gang: require('./gang.js'),
 	//fs: require('fs'),
 	users: []
 };

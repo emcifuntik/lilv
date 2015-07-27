@@ -12,6 +12,7 @@ User.prototype.connect = function(player) {
 	this.health = 0;
 	this.armor = 0;
 	this.faction = 0;
+	this.gang = 0;
 	this.job = 0;
 	this.rank = 0;
 	this.position = {x:0.0, y:0.0, z:0.0};
@@ -27,7 +28,7 @@ User.prototype.connect = function(player) {
 	this.lastGetWeapon = 0;
 	this.banned = 0;
 	this.muted = 0;
-
+	this.jailed = 0;
 	let curry = function(user) {
 		return function (error, rows, fields) {
 			if(rows.length == 0) {
@@ -77,12 +78,15 @@ User.prototype.saveData = function() {
 `user_bank`=?,\
 `user_cash`=?,\
 `user_faction`=?,\
+`user_gang`=?,\
 `user_rank`=?,\
 `user_model`=?,\
 `user_last_login`=NOW(),\
 `user_last_ip`=?,\
 `user_banned`=?,\
-`user_muted`=? WHERE `user_id`=? LIMIT 1', [
+`user_muted`=?,\
+`user_jailed`=?,\
+ WHERE `user_id`=? LIMIT 1', [
 		this.position.x,
 		this.position.y,
 		this.position.z,
@@ -97,11 +101,13 @@ User.prototype.saveData = function() {
 		this.bank,
 		this.cash,
 		this.faction,
+		this.gang,
 		this.rank,
 		this.model,
 		this.player.client.ipAddress,
 		this.banned,
 		this.muted,
+		this.jailed
 		this.ID
 	], function (error, result, fields) {
 		if(result.affectedRows == 0) {
@@ -173,6 +179,7 @@ User.prototype.login = function(password) {
 				user.player.armor = user.armor;
 
 				user.faction = rows[0].user_faction;
+				user.gang = rows[0].user_gang;
 				user.rank = rows[0].user_rank;
 
 				user.player.position.x = user.position.x = rows[0].user_pos_x;
@@ -190,6 +197,7 @@ User.prototype.login = function(password) {
 				user.level = rows[0].user_level;
 				user.respect = rows[0].user_respect;
 				user.muted = rows[0].user_muted;
+				user.jailed = rows[0].user_jailed;
 			}
 		};
 	};
@@ -219,9 +227,17 @@ User.prototype.answerPropose = (answer) => {
 		let issuer = (this.conversation.issuer != false) ? gm.users[this.conversation.issuer.client.networkId] : false;
 		switch(this.conversation.type) {
 			case 1: {
-				this.faction = this.conversation.info.faction;
-				this.rank = 1;
-				this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", Colors.Success);
+				if(this.conversation.info.faction > 0)
+				{
+					this.faction = this.conversation.info.faction;
+					this.rank = 1;
+					this.player.SendChatMessage("You joined \"" + gm.faction.GetFactionName(this.faction) + "\" faction", Colors.Success);
+				}
+				else if (this.conversation.info.gang > 0) {
+					this.gang = this.conversation.info.gang;
+					this.rank = 1;
+					this.player.SendChatMessage("You joined \"" + gm.gang.GetGangName(this.gang) + "\" gang", Colors.Success);
+				}
 			}//Вступление во фракцию
 			case 2: {
 				if(this.cash < this.conversation.info.price) {
