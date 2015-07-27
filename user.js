@@ -107,7 +107,7 @@ User.prototype.saveData = function() {
 		this.player.client.ipAddress,
 		this.banned,
 		this.muted,
-		this.jailed
+		this.jailed,
 		this.ID
 	], function (error, result, fields) {
 		if(result.affectedRows == 0) {
